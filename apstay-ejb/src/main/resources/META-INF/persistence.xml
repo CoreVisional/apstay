@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <persistence-unit name="apstay-ejbPU" transaction-type="JTA">
+    <jta-data-source>jdbc/apstay</jta-data-source>
+    <class>com.apu.apstay.entities.UserProfile</class>
+    <class>com.apu.apstay.entities.User</class>
+    <class>com.apu.apstay.entities.Visitor</class>
+    <class>com.apu.apstay.entities.Unit</class>
+    <class>com.apu.apstay.entities.Resident</class>
+    <class>com.apu.apstay.entities.Role</class>
+    <class>com.apu.apstay.entities.Security</class>
+    <class>com.apu.apstay.entities.AccountRegistration</class>
+    <class>com.apu.apstay.entities.VisitRequest</class>
+    <class>com.apu.apstay.entities.VisitCode</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="update"/>
+      <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
+    </properties>
+  </persistence-unit>
+</persistence>
