@@ -6,5 +6,7 @@ package com.apu.apstay.commands.units;
  */
 public record UnitCreateCommand(
         String unitName,
-        int floorNumber
-) { }
+        int floorNumber,
+        int capacity
+) {}
+

@@ -7,5 +7,6 @@ package com.apu.apstay.commands.units;
 public record UnitUpdateCommand(
         String unitName,
         int floorNumber,
-        boolean occupied
-) { }
+        int capacity,
+        boolean active
+) {}

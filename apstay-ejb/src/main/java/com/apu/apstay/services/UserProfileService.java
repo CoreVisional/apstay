@@ -7,7 +7,9 @@ import com.apu.apstay.facades.UserProfileFacade;
 import com.apu.apstay.utils.EncryptionUtil;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +57,32 @@ public class UserProfileService {
         profile.setAddress(address);
 
         userProfileFacade.edit(profile);
+    }
+    
+    public Map<String, Object> getGenderDistribution() {
+        var results = userProfileFacade.getGenderDistributionData();
+
+        Map<String, Integer> genderCounts = new HashMap<>();
+
+        for (Object[] result : results) {
+            var gender = (Gender) result[0];
+            var count = ((Number) result[1]).longValue();
+            genderCounts.put(gender.name(), (int) count);
+        }
+
+        for (Gender gender : Gender.values()) {
+            if (!genderCounts.containsKey(gender.name())) {
+                genderCounts.put(gender.name(), 0);
+            }
+        }
+
+        int totalCount = genderCounts.values().stream().mapToInt(Integer::intValue).sum();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("genderCounts", genderCounts);
+        result.put("totalCount", totalCount);
+
+        return result;
     }
     // </editor-fold>
 }

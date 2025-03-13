@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
  */
 @Stateless
 public abstract class BaseService {
+    
     @Inject
     protected SessionContext sessionContext;
     

@@ -122,8 +122,8 @@ public class EditServlet extends HttpServlet {
             if (!violations.isEmpty()) {
                 Map<String, String> errors = new HashMap<>();
                 for (ConstraintViolation<VisitRequestEditInputModel> violation : violations) {
-                    String propertyPath = violation.getPropertyPath().toString();
-                    String message = violation.getMessage();
+                    var propertyPath = violation.getPropertyPath().toString();
+                    var message = violation.getMessage();
                     errors.put(propertyPath, message);
                 }
                 request.setAttribute("errors", errors);

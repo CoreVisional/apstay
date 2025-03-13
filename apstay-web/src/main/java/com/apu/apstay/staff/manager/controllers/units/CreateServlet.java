@@ -114,7 +114,8 @@ public class CreateServlet extends HttpServlet {
     private UnitCreateCommand mapToCommand(UnitInputModel input) {
         return new UnitCreateCommand(
                 input.getUnitName(),
-                input.getFloorNumber()
+                input.getFloorNumber(),
+                input.getCapacity()
         );
     }
     // </editor-fold>

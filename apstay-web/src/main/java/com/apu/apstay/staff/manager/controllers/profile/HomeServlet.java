@@ -1,15 +1,13 @@
-package com.apu.apstay.staff.security.controllers.profiles;
+package com.apu.apstay.staff.manager.controllers.profile;
 
 import com.apu.apstay.auth.models.viewmodels.SessionUserViewModel;
 import com.apu.apstay.common.models.inputmodels.UserAccountEditInputModel;
+import com.apu.apstay.common.models.inputmodels.UserProfileEditInputModel;
 import com.apu.apstay.common.models.viewmodels.UserAccountViewModel;
-import com.apu.apstay.enums.CommuteMode;
-import com.apu.apstay.enums.Gender;
+import com.apu.apstay.common.models.viewmodels.UserProfileViewModel;
 import com.apu.apstay.exceptions.BusinessRulesException;
-import com.apu.apstay.services.SecurityService;
 import com.apu.apstay.services.UserProfileService;
 import com.apu.apstay.services.UserService;
-import com.apu.apstay.staff.security.models.viewmodels.SecurityProfileViewModel;
 import com.apu.apstay.utils.RequestParameterProcessor;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
@@ -32,9 +30,9 @@ import org.hibernate.validator.cdi.HibernateValidator;
  *
  * @author alexc
  */
-@WebServlet(name = "SecurityProfileServlet", urlPatterns = {"/security/profile"})
+@WebServlet(name = "ManagerProfileServlet", urlPatterns = {"/manager/profile"})
 public class HomeServlet extends HttpServlet {
-    
+
     @Inject
     @HibernateValidator
     private Validator validator;
@@ -44,10 +42,7 @@ public class HomeServlet extends HttpServlet {
     
     @EJB
     private UserProfileService userProfileService;
-    
-    @EJB
-    private SecurityService securityService;
-    
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -64,17 +59,13 @@ public class HomeServlet extends HttpServlet {
         var sessionUser = (SessionUserViewModel) request.getSession().getAttribute("user");
 
         var userProfile = userProfileService.getByUserId(sessionUser.getId());
-        var security = securityService.getByUserId(sessionUser.getId());
 
         var accountVM = new UserAccountViewModel(
                 sessionUser.getUsername(),
                 sessionUser.getEmail()
         );
         
-        var profileVM = new SecurityProfileViewModel(
-                security.commuteMode(),
-                sessionUser.getUsername(),
-                sessionUser.getEmail(),
+        var profileVM = new UserProfileViewModel(
                 userProfile.name(),
                 userProfile.identityNumber(),
                 userProfile.gender(),
@@ -85,7 +76,7 @@ public class HomeServlet extends HttpServlet {
         request.setAttribute("accountVM", accountVM);
         request.setAttribute("profileVM", profileVM);
         
-        request.getRequestDispatcher("/WEB-INF/views/security/profiles/index.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/manager/profile/index.jsp").forward(request, response);
     }
 
     /**
@@ -113,10 +104,10 @@ public class HomeServlet extends HttpServlet {
             }
         } catch (BusinessRulesException e) {
             setErrorMessage(request, e.getMessage());
-            response.sendRedirect(request.getContextPath() + "/security/profile");
+            response.sendRedirect(request.getContextPath() + "/manager/profile");
         } catch (IllegalAccessException | InvocationTargetException e) {
             setErrorMessage(request, "An error occurred while updating your profile");
-            response.sendRedirect(request.getContextPath() + "/security/profile");
+            response.sendRedirect(request.getContextPath() + "/manager/profile");
         }
     }
 
@@ -147,12 +138,8 @@ public class HomeServlet extends HttpServlet {
             );
 
             var userProfile = userProfileService.getByUserId(userId);
-            var security = securityService.getByUserId(userId);
             
-            var profileVM = new SecurityProfileViewModel(
-                    security.commuteMode(),
-                    accountInput.getUsername(),
-                    accountInput.getEmail(),
+            var profileVM = new UserProfileViewModel(
                     userProfile.name(),
                     userProfile.identityNumber(),
                     userProfile.gender(),
@@ -164,7 +151,7 @@ public class HomeServlet extends HttpServlet {
             request.setAttribute("profileVM", profileVM);
             request.setAttribute("errors", errors);
             request.setAttribute("editMode", "account");
-            request.getRequestDispatcher("/WEB-INF/views/security/profiles/index.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/manager/profile/index.jsp").forward(request, response);
             return;
         }
 
@@ -173,31 +160,55 @@ public class HomeServlet extends HttpServlet {
         updateSessionUser(request, userId);
         
         setSuccessMessage(request, "Account information updated successfully");
-        response.sendRedirect(request.getContextPath() + "/security/profile");
+        response.sendRedirect(request.getContextPath() + "/manager/profile");
     }
     
     private void handlePersonalUpdate(HttpServletRequest request, HttpServletResponse response, 
             Long userId, Map<String, String[]> processedParams) 
-            throws ServletException, IOException, BusinessRulesException {
+            throws ServletException, IOException, IllegalAccessException, InvocationTargetException, BusinessRulesException {
 
-        var name = request.getParameter("name");
-        var identityNumber = request.getParameter("identityNumber");
-        var gender = request.getParameter("gender") != null ? 
-            Gender.valueOf(request.getParameter("gender")) : null;
-        var phone = request.getParameter("phone");
-        var address = request.getParameter("address");
+        var profileInput = new UserProfileEditInputModel();
+        BeanUtils.populate(profileInput, processedParams);
 
-        userProfileService.updateProfile(userId, name, identityNumber, gender, phone, address);
+        var violations = validator.validate(profileInput);
+        if (!violations.isEmpty()) {
+            Map<String, String> errors = extractValidationErrors(violations);
 
-        if (request.getParameter("commuteMode") != null) {
-            CommuteMode commuteMode = CommuteMode.valueOf(request.getParameter("commuteMode"));
-            securityService.updateCommuteMode(userId, commuteMode);
+            var sessionUser = (SessionUserViewModel) request.getSession().getAttribute("user");
+            var accountVM = new UserAccountViewModel(
+                    sessionUser.getUsername(),
+                    sessionUser.getEmail()
+            );
+
+            var profileVM = new UserProfileViewModel(
+                    profileInput.getName(),
+                    profileInput.getIdentityNumber(),
+                    profileInput.getGender(),
+                    profileInput.getPhone(),
+                    profileInput.getAddress()
+            );
+
+            request.setAttribute("accountVM", accountVM);
+            request.setAttribute("profileVM", profileVM);
+            request.setAttribute("errors", errors);
+            request.setAttribute("editMode", "personal");
+            request.getRequestDispatcher("/WEB-INF/views/manager/profile/index.jsp").forward(request, response);
+            return;
         }
 
+        userProfileService.updateProfile(
+                userId, 
+                profileInput.getName(), 
+                profileInput.getIdentityNumber(), 
+                profileInput.getGender(), 
+                profileInput.getPhone(), 
+                profileInput.getAddress()
+        );
+
         updateSessionUser(request, userId);
-        
+
         setSuccessMessage(request, "Personal information updated successfully");
-        response.sendRedirect(request.getContextPath() + "/security/profile");
+        response.sendRedirect(request.getContextPath() + "/manager/profile");
     }
     
     private <T> Map<String, String> extractValidationErrors(Set<ConstraintViolation<T>> violations) {

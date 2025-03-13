@@ -1,5 +1,6 @@
 package com.apu.apstay.staff.manager.controllers.registrations;
 
+import com.apu.apstay.exceptions.BusinessRulesException;
 import com.apu.apstay.security.SessionContext;
 import com.apu.apstay.services.AccountRegistrationService;
 import com.apu.apstay.staff.manager.models.inputmodels.RegistrationApproveInputModel;
@@ -50,14 +51,14 @@ public class ApprovalServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         var _input = new RegistrationApproveInputModel();
         var _processedParams = RequestParameterProcessor.getProcessedParameters(request);
-        
+
         try {
             BeanUtils.populate(_input, _processedParams);
             _input.setReviewerId(sessionContext.getCurrentUserId());
-            
+
             Set<ConstraintViolation<RegistrationApproveInputModel>> violations = validator.validate(_input);
             if (!violations.isEmpty()) {
                 Map<String, String> errors = new HashMap<>();
@@ -71,11 +72,20 @@ public class ApprovalServlet extends HttpServlet {
                 return;
             }
 
-            accountRegistrationService.approve(_input.getRegistrationId(), _input.getReviewerId());
+            try {
+                accountRegistrationService.approve(_input.getRegistrationId(), _input.getReviewerId());
 
-            request.getSession().setAttribute("notice", "Account Request Approved Successfully");
-            request.getSession().setAttribute("noticeBg", "alert-success");
-            response.sendRedirect(request.getContextPath() + "/manager/registrations");
+                request.getSession().setAttribute("notice", "Account Request Approved Successfully");
+                request.getSession().setAttribute("noticeBg", "alert-success");
+                response.sendRedirect(request.getContextPath() + "/manager/registrations");
+            } catch (BusinessRulesException e) {
+                Map<String, String> errors = new HashMap<>();
+                errors.put(e.getErrorKey(), e.getMessage());
+                request.getSession().setAttribute("errors", errors);
+                request.getSession().setAttribute("notice", "Unable to approve registration: " + e.getMessage());
+                request.getSession().setAttribute("noticeBg", "alert-danger");
+                response.sendRedirect(request.getContextPath() + "/manager/registrations/details/" + _input.getRegistrationId());
+            }
         } catch (NumberFormatException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid parameter");
         } catch (IllegalAccessException | InvocationTargetException e) {

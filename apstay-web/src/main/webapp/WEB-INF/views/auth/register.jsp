@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="com.apu.apstay.enums.Gender" %>
 
-<register:auth-template title="APStay - Registration">
+<register:auth-template title="Registration">
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="p-5">

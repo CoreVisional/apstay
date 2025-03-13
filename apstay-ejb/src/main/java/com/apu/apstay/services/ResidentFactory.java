@@ -19,7 +19,7 @@ public class ResidentFactory {
         if (entity == null) {
             return null;
         }
-
+        
         var fullName = entity.getUser().getUserProfile() != null ? entity.getUser().getUserProfile().getName() : entity.getUser().getUsername();
 
         return new ResidentDto(
@@ -27,7 +27,8 @@ public class ResidentFactory {
                 fullName,
                 entity.getUser().getEmail(),
                 entity.getUnit().getUnitName(),
-                entity.getUnit().getFloorNumber()
+                entity.getUnit().getFloorNumber(),
+                entity.getUser().isActive()
         );
     }
 }

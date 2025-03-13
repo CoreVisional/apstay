@@ -5,12 +5,13 @@
 <%!
     int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
 %>
+<%@ attribute name="title" required="false" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${pageContext.request.contextPath} - Home</title>
+    <title>${title} - APStay</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/lib/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/lib/sb-admin-2/css/sb-admin-2.css" />
@@ -20,8 +21,8 @@
 <body id="page-top">
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="${pageContext.request.contextPath}">
-                <div class="sidebar-brand-icon">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="${pageContext.request.contextPath}/manager">
+                <div class="sidebar-brand-icon mr-1">
                     <img src="${pageContext.request.contextPath}/assets/images/logo.png" height="30" width="30" alt="Icon"/>
                 </div>
                 <div class="sidebar-brand-text mx-1" style="font-weight: normal;">
@@ -35,10 +36,6 @@
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <div class="sidebar-brand-text mx-1 d-md-none" style="font-weight: normal;">Admin</div>
                     <ul class="navbar-nav ml-auto">
                         <shared:topbar />
                     </ul>
@@ -68,6 +65,15 @@
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/js/sb-admin-2.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/vendor/chart.js/Chart.min.js"></script>
-    <script src="${pageContext.request.contextPath}/assets/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('table.table-show-dt').DataTable({
+                "order": []
+            });
+        });
+    </script>
 </body>
 </html>

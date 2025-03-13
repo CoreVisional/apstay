@@ -21,7 +21,7 @@
     <div id="wrapper">
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="${pageContext.request.contextPath}">
-                <div class="sidebar-brand-icon">
+                <div class="sidebar-brand-icon mr-1">
                     <img src="${pageContext.request.contextPath}/assets/images/logo.png" height="30" width="30" alt="Icon"/>
                 </div>
                 <div class="sidebar-brand-text mx-1" style="font-weight: normal;">

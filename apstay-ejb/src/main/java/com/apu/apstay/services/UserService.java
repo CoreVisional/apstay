@@ -13,7 +13,6 @@ import com.apu.apstay.facades.UserProfileFacade;
 import com.apu.apstay.utils.PasswordUtil;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.apu.apstay.utils.EncryptionUtil;
@@ -46,6 +45,10 @@ public class UserService extends BaseService {
     // <editor-fold defaultstate="collapsed" desc="Implementations of UserService">
     public UserDto getById(Long id) {
         return userFactory.toDto(userFacade.find(id));
+    }
+    
+    public User findByEmail(String email) {
+        return userFacade.findByEmail(email);
     }
     
     public UserDto getByLoginKey(String loginKey) {
@@ -117,16 +120,6 @@ public class UserService extends BaseService {
 
         return userFactory.toDto(user);
     }
-
-    public void updateLoginSuccess(Long userId) {
-        var _user = userFacade.find(userId);
-        updateLoginAttempt(_user, true);
-    }
-
-    public void updateLoginFailure(Long userId) {
-        var _user = userFacade.find(userId);
-        updateLoginAttempt(_user, false);
-    }
     
     public void updateUserAccount(Long userId, String username, String email) throws BusinessRulesException {
         
@@ -158,7 +151,45 @@ public class UserService extends BaseService {
         user.setActive(false);
         setAuditFields(user);
         userFacade.edit(user);
-}
+    }
+    
+    public void reactivateUser(Long userId) {
+        var user = userFacade.find(userId);
+
+        user.setActive(true);
+        setAuditFields(user);
+        userFacade.edit(user);
+    }
+    
+    public void changePassword(Long userId, String currentPassword, String newPassword) throws BusinessRulesException {
+        var user = userFacade.find(userId);
+
+        if (!PasswordUtil.verifyPassword(currentPassword, user.getPasswordHash())) {
+            throw new BusinessRulesException("currentPassword", "Current password is incorrect");
+        }
+
+        if (currentPassword.equals(newPassword)) {
+            throw new BusinessRulesException("newPassword", "New password must be different from current password");
+        }
+
+        if (newPassword.length() < 8) {
+            throw new BusinessRulesException("newPassword", "Password must be at least 8 characters long");
+        }
+
+        user.setPasswordHash(PasswordUtil.hashPassword(newPassword));
+        setAuditFields(user);
+        userFacade.edit(user);
+    }
+
+    public void resetPassword(User user, String newPassword) throws BusinessRulesException {
+        if (newPassword.length() < 8) {
+            throw new BusinessRulesException("newPassword", "Password must be at least 8 characters long");
+        }
+
+        user.setPasswordHash(PasswordUtil.hashPassword(newPassword));
+        setAuditFields(user);
+        userFacade.edit(user);
+    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Private Implementations">
@@ -222,21 +253,6 @@ public class UserService extends BaseService {
         } else {
             userProfileFacade.edit(profile);
         }
-    }
-
-    private void updateLoginAttempt(User user, boolean success) {
-        if (success) {
-            user.setLastLogin(LocalDateTime.now());
-            user.setFailedLoginAttempts(0);
-        } else {
-            user.setLastFailedLogin(LocalDateTime.now());
-            user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
-            if (user.getFailedLoginAttempts() >= 5) {
-                user.setLocked(true);
-            }
-        }
-        setAuditFields(user);
-        userFacade.edit(user);
     }
     // </editor-fold>
 }

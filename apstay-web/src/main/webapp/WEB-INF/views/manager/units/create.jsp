@@ -24,6 +24,12 @@
                         <shared:validation-error field="floorNumber" />
                     </div>
                     <div class="form-group">
+                        <label for="capacity" class="control-label">Capacity</label>
+                        <input type="number" id="capacity" name="capacity" class="form-control" value="1" min="1" required />
+                        <small class="text-muted">Number of residents this unit can accommodate</small>
+                        <shared:validation-error field="capacity" />
+                    </div>
+                    <div class="form-group">
                         <input type="submit" value="Submit" class="btn btn-primary" />
                     </div>
                 </form>

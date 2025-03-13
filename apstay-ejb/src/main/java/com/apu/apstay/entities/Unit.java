@@ -4,6 +4,7 @@ import com.apu.apstay.entities.common.BaseModel;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +19,7 @@ import java.util.Set;
 public class Unit extends BaseModel {
 
     // <editor-fold defaultstate="collapsed" desc="Properties">
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Resident> residents;
     
     @NotBlank
@@ -31,7 +32,8 @@ public class Unit extends BaseModel {
     private int floorNumber;
     
     @Column(nullable = false)
-    private boolean occupied = false;
+    @Min(value = 1, message = "Capacity must be at least 1")
+    private int capacity = 1;
     
     @Column(nullable = false)
     private boolean active = true;
@@ -41,10 +43,10 @@ public class Unit extends BaseModel {
     public Unit() {
     }
 
-    public Unit(String unitName, int floorNumber, Set<Resident> residents) {
+    public Unit(Set<Resident> residents, String unitName, int floorNumber) {
+        this.residents = residents;
         this.unitName = unitName;
         this.floorNumber = floorNumber;
-        this.residents = residents;
     }
     // </editor-fold>
     
@@ -65,12 +67,12 @@ public class Unit extends BaseModel {
         this.floorNumber = floorNumber;
     }
 
-    public boolean isOccupied() {
-        return occupied;
+    public int getCapacity() {
+        return capacity;
     }
 
-    public void setOccupied(boolean occupied) {
-        this.occupied = occupied;
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 
     public boolean isActive() {

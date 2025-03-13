@@ -6,13 +6,13 @@ package com.apu.apstay.staff.manager.models.inputmodels;
  */
 public class UnitEditInputModel extends UnitInputModel {
     
-    private boolean occupied;
+    private boolean active = true;
     
-    public boolean isOccupied() {
-        return occupied;
+    public boolean isActive() {
+        return active;
     }
     
-    public void setOccupied(boolean occupied) {
-        this.occupied = occupied;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

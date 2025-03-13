@@ -12,7 +12,7 @@ public class SecurityProfileViewModel extends UserProfileViewModel {
     
     private final CommuteMode commuteMode;
 
-    public SecurityProfileViewModel(CommuteMode commuteMode, String username, String email, String name, String identityNumber, Gender gender, String phone, String address) {
+    public SecurityProfileViewModel(String name, String identityNumber, Gender gender, String phone, String address, CommuteMode commuteMode) {
         super(name, identityNumber, gender, phone, address);
         this.commuteMode = commuteMode;
     }

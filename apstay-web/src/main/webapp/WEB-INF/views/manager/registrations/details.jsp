@@ -4,7 +4,7 @@
 <%@ taglib prefix="shared" tagdir="/WEB-INF/tags/shared" %>
 <%@ taglib prefix="f" uri="/tlds/functions" %>
 
-<manager:layout>
+<manager:layout title="Registration Details">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h3 class="h3 mb-0 text-gray-800">Account Registration Details</h3>
         <c:if test="${registration.status() eq 'PENDING'}">

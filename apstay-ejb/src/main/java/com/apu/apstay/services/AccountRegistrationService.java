@@ -3,8 +3,10 @@ package com.apu.apstay.services;
 import com.apu.apstay.services.common.BaseService;
 import com.apu.apstay.commands.auth.RegistrationCreateCommand;
 import com.apu.apstay.dtos.AccountRegistrationDto;
+import com.apu.apstay.dtos.UserProfileDto;
 import com.apu.apstay.enums.ApprovalStatus;
 import com.apu.apstay.enums.Gender;
+import com.apu.apstay.exceptions.BusinessRulesException;
 import com.apu.apstay.facades.AccountRegistrationFacade;
 import com.apu.apstay.facades.ResidentFacade;
 import com.apu.apstay.facades.UnitFacade;
@@ -14,6 +16,7 @@ import com.apu.apstay.utils.EncryptionUtil;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,9 +35,6 @@ public class AccountRegistrationService extends BaseService {
     
     @EJB
     private AccountRegistrationFactory accountRegistrationFactory;
-    
-    @EJB
-    private UserProfileService userProfileService;
     
     @EJB
     private ResidentFacade residentFacade;
@@ -70,7 +70,7 @@ public class AccountRegistrationService extends BaseService {
             return _dto;
         }
 
-        var _profile = userProfileService.getByUserId(_reviewer.getId());
+        var _profile = getRegistrationByUserId(_reviewer.getId());
 
         return new AccountRegistrationDto(
                 _dto.id(),
@@ -122,11 +122,20 @@ public class AccountRegistrationService extends BaseService {
         accountRegistrationFacade.create(_entity);
     }
     
-    public AccountRegistrationDto approve(Long id, Long reviewerId) {
+    public AccountRegistrationDto approve(Long id, Long reviewerId) throws BusinessRulesException {
         var _registration = accountRegistrationFacade.find(id);
         var _registrantId = _registration.getRegistrant().getId();
-        var profileDto = userProfileService.getByUserId(_registrantId);
+        var profileDto = getRegistrationByUserId(_registrantId);
         var _unit = _registration.getUnit();
+
+        _unit = unitFacade.find(_unit.getId());
+
+        int occupancy = _unit.getResidents() != null ? _unit.getResidents().size() : 0;
+        boolean hasSpace = occupancy < _unit.getCapacity();
+
+        if (!hasSpace) {
+            throw new BusinessRulesException("unit", "The selected unit is at full capacity");
+        }
 
         if (profileDto == null) {
             var _userProfile = userProfileFactory.getNew();
@@ -143,11 +152,16 @@ public class AccountRegistrationService extends BaseService {
         var _resident = residentFactory.getNew();
         _resident.setUser(_registration.getRegistrant());
         _resident.setUnit(_unit);
-        setAuditFields(_resident);
-        residentFacade.create(_resident);
 
-        _unit.setOccupied(true);
+        if (_unit.getResidents() == null) {
+            _unit.setResidents(new HashSet<>());
+        }
+        _unit.getResidents().add(_resident);
+
+        setAuditFields(_resident);
         setAuditFields(_unit);
+
+        residentFacade.create(_resident);
         unitFacade.edit(_unit);
 
         _registration.setStatus(ApprovalStatus.APPROVED);
@@ -169,5 +183,10 @@ public class AccountRegistrationService extends BaseService {
         accountRegistrationFacade.edit(_registration);
         
         return accountRegistrationFactory.toDto(_registration);
+    }
+    
+    private UserProfileDto getRegistrationByUserId(Long userId) {
+        var _profile = userProfileFacade.findByUserId(userId);
+        return _profile != null ? userProfileFactory.toDto(_profile) : null;
     }
 }

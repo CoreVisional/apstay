@@ -9,5 +9,6 @@ public record ResidentDto(
         String fullName,
         String email,
         String unitName,
-        int floorNumber
+        int floorNumber,
+        boolean active
 ) {}

@@ -1,6 +1,7 @@
 <%@ taglib prefix="login" tagdir="/WEB-INF/tags/auth" %>
 <%@ taglib prefix="shared" tagdir="/WEB-INF/tags/shared" %>
-<login:auth-template title="APStay - Login">
+
+<login:auth-template title="Login">
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="p-5">
@@ -24,7 +25,7 @@
                 </form>
                 <hr>
                 <div class="text-center">
-                    <a class="small" href="${pageContext.request.contextPath}/views/auth/forgot-password.jsp">Forgot Password?</a>
+                    <a class="small" href="${pageContext.request.contextPath}/forgot-password">Forgot Password?</a>
                 </div>
                 <div class="text-center">
                     <a class="small" href="${pageContext.request.contextPath}/register">Register an Account!</a>

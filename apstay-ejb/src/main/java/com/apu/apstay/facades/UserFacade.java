@@ -33,7 +33,7 @@ public class UserFacade extends AbstractFacade<User> {
     }
     
     public List<User> findStaffUsers(boolean isSuperUser) {
-        String baseQuery = "SELECT DISTINCT u FROM User u JOIN FETCH u.roles r WHERE r.name IN ('manager', 'security')";
+        var baseQuery = "SELECT DISTINCT u FROM User u JOIN FETCH u.roles r WHERE r.name IN ('manager', 'security')";
         
         if (isSuperUser) {
             baseQuery += " OR r.name = 'superuser'";

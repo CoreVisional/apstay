@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="security" tagdir="/WEB-INF/tags/security" %>
+<%@ taglib prefix="manager" tagdir="/WEB-INF/tags/manager" %>
 <%@ taglib prefix="shared" tagdir="/WEB-INF/tags/shared" %>
 <%@ page import="com.apu.apstay.enums.Gender" %>
 <%@ page import="com.apu.apstay.enums.CommuteMode" %>
 
-<security:layout>
+<manager:layout title="My Profile">
     <div class="container-fluid">
         <h1 class="h3 mb-4 text-gray-800">My Profile</h1>
         
@@ -21,7 +21,7 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <form id="accountForm" method="POST" action="${pageContext.request.contextPath}/security/profile">
+                        <form id="accountForm" method="POST" action="${pageContext.request.contextPath}/manager/profile">
                             <input type="hidden" name="formType" value="account"> 
                             
                             <div class="form-group row">
@@ -42,7 +42,7 @@
                             
                             <div class="form-group row">
                                 <div class="col-sm-12 text-right">
-                                    <a href="${pageContext.request.contextPath}/security/password" class="btn btn-warning">
+                                    <a href="${pageContext.request.contextPath}/manager/profile/change-password" class="btn btn-warning">
                                         <i class="fas fa-key fa-sm"></i> Change Password
                                     </a>
                                 </div>
@@ -50,8 +50,8 @@
 
                             <div class="form-group row d-none" id="accountButtons">
                                 <div class="col-sm-12 text-right">
-                                    <button type="button" class="btn btn-secondary" id="cancelAccountBtn">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelAccountBtn">Cancel</button>
                                 </div>
                             </div>
                         </form>
@@ -68,7 +68,7 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <form id="personalForm" method="POST" action="${pageContext.request.contextPath}/security/profile">
+                        <form id="personalForm" method="POST" action="${pageContext.request.contextPath}/manager/profile">
                             <input type="hidden" name="formType" value="personal">
                             
                             <div class="form-group row">
@@ -112,23 +112,10 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label for="commuteMode" class="col-sm-4 col-form-label">Commute Mode</label>
-                                <div class="col-sm-8">
-                                    <select class="form-control personal-field" id="commuteMode" name="commuteMode" disabled>
-                                        <c:forEach items="<%= CommuteMode.values() %>" var="commuteModeOption">
-                                            <option value="${commuteModeOption.name()}" <c:if test="${commuteModeOption.name() eq profileVM.commuteMode}">selected</c:if>>
-                                                ${commuteModeOption.toString()}
-                                            </option>
-                                        </c:forEach>
-                                    </select>
-                                </div>
-                            </div>
-
                             <div class="form-group row d-none" id="personalButtons">
                                 <div class="col-sm-12 text-right">
-                                    <button type="button" class="btn btn-secondary" id="cancelPersonalBtn">Cancel</button>
                                     <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelPersonalBtn">Cancel</button>
                                 </div>
                             </div>
                         </form>
@@ -214,4 +201,4 @@
             });
         });
     </script>
-</security:layout>
+</manager:layout>

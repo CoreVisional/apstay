@@ -1,7 +1,6 @@
 package com.apu.apstay.staff.manager.controllers.staffs;
 
 import com.apu.apstay.dtos.UserDto;
-import com.apu.apstay.dtos.UserProfileDto;
 import com.apu.apstay.services.UserService;
 import com.apu.apstay.services.UserProfileService;
 import com.apu.apstay.security.SessionContext;
@@ -14,7 +13,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -64,11 +62,11 @@ public class HomeServlet extends HttpServlet {
         var userIds = userDtos.stream()
                 .map(UserDto::id)
                 .collect(Collectors.toList());
-        List<UserProfileDto> profileDtos = userProfileService.getByUserIds(userIds);
+        var profileDtos = userProfileService.getByUserIds(userIds);
 
-        var _vm = StaffIndexViewModel.from(userDtos, profileDtos);
+        var vm = StaffIndexViewModel.from(userDtos, profileDtos);
 
-        request.setAttribute("staffs", _vm);
+        request.setAttribute("staffs", vm);
         request.getRequestDispatcher("/WEB-INF/views/manager/staffs/index.jsp")
                .forward(request, response);
     }

@@ -7,6 +7,7 @@ import com.apu.apstay.commands.users.UserCreateCommand;
 import com.apu.apstay.services.AccountRegistrationService;
 import com.apu.apstay.services.UnitService;
 import com.apu.apstay.services.UserService;
+import com.apu.apstay.staff.manager.models.viewmodels.unit.UnitViewModel;
 import jakarta.ejb.EJB;
 import jakarta.inject.Inject;
 import java.io.IOException;
@@ -58,7 +59,9 @@ public class RegistrationServlet extends HttpServlet {
         
         var availableUnits = unitService.getAvailableUnits();
         
-        request.setAttribute("availableUnits", availableUnits);
+        var vm = UnitViewModel.from(availableUnits);
+        
+        request.setAttribute("availableUnits", vm);
         request.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(request, response);
     }
 

@@ -74,9 +74,9 @@ public class LoginServlet extends HttpServlet {
 
         try {
             if (authService.login(loginInput.getLoginKey(), loginInput.getPassword())) {
-                var userDto = userService.getByLoginKey(loginInput.getLoginKey());
-                var profileDto = userProfileService.getByUserId(userDto.id());
-                var sessionUser = new SessionUserViewModel(userDto, profileDto);
+                var user = userService.getByLoginKey(loginInput.getLoginKey());
+                var userProfile = userProfileService.getByUserId(user.id());
+                var sessionUser = new SessionUserViewModel(user, userProfile);
                 request.getSession().setAttribute("user", sessionUser);
 
                 var redirectPath = authService.determineRedirectPath(loginInput.getLoginKey());

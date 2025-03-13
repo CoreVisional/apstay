@@ -12,6 +12,7 @@
     <class>com.apu.apstay.entities.AccountRegistration</class>
     <class>com.apu.apstay.entities.VisitRequest</class>
     <class>com.apu.apstay.entities.VisitCode</class>
+    <class>com.apu.apstay.entities.Token</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="update"/>

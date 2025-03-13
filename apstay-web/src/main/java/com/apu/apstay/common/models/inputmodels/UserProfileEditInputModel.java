@@ -14,6 +14,7 @@ public class UserProfileEditInputModel {
     
     @NotBlank(message = "Identity number cannot be blank!")
     private String identityNumber;
+    
     private Gender gender;
     
     @NotBlank(message = "Phone number cannot be blank!")
@@ -21,6 +22,17 @@ public class UserProfileEditInputModel {
     
     @NotBlank(message = "Address cannot be blank!")
     private String address;
+
+    public UserProfileEditInputModel() {
+    }
+    
+    public UserProfileEditInputModel(String name, String identityNumber, Gender gender, String phone, String address) {
+        this.name = name;
+        this.identityNumber = identityNumber;
+        this.gender = gender;
+        this.phone = phone;
+        this.address = address;
+    }
 
     public String getName() {
         return name;

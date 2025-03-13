@@ -5,6 +5,7 @@ import com.apu.apstay.entities.Unit;
 import com.apu.apstay.entities.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.HashSet;
 
 /**
  *
@@ -16,7 +17,7 @@ public class ResidentSeeder {
     
     public void seed() {
         var units = em.createQuery(
-            "SELECT u FROM Unit u WHERE u.occupied = false ORDER BY u.unitName", 
+            "SELECT u FROM Unit u LEFT JOIN FETCH u.residents WHERE u.active = true ORDER BY u.unitName", 
             Unit.class
         ).getResultList();
         
@@ -42,14 +43,22 @@ public class ResidentSeeder {
             
             if (existingResident.isEmpty() && unitIndex < units.size()) {
                 var unit = units.get(unitIndex);
-                
-                var resident = new Resident();
-                resident.setUser(user);
-                resident.setUnit(unit);
-                em.persist(resident);
 
-                unit.setOccupied(true);
-                em.merge(unit);
+                int occupancy = unit.getResidents() != null ? unit.getResidents().size() : 0;
+                boolean hasSpace = occupancy < unit.getCapacity();
+
+                if (hasSpace) {
+                    var resident = new Resident();
+                    resident.setUser(user);
+                    resident.setUnit(unit);
+
+                    if (unit.getResidents() == null) {
+                        unit.setResidents(new HashSet<>());
+                    }
+                    unit.getResidents().add(resident);
+                    
+                    em.persist(resident);
+                }
                 
                 unitIndex++;
             }

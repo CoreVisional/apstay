@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>${title}</title>
+    <title>${title} - APStay</title>
     <link href="${pageContext.request.contextPath}/assets/lib/sb-admin-2/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="${pageContext.request.contextPath}/assets/lib/sb-admin-2/css/sb-admin-2.min.css" rel="stylesheet">
 </head>

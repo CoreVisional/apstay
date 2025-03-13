@@ -1,9 +1,8 @@
 <%@ taglib prefix="manager" tagdir="/WEB-INF/tags/manager" %>
-<manager:layout>
+<manager:layout title="Home">
     <div class="row">
         <div class="col-12 mb-4">
             <h1 class="h3 mb-0 text-gray-800">Manager Dashboard</h1>
-            <p class="mb-4">Welcome, [Manager Name]! Here's an overview of key metrics for your management duties.</p>
         </div>
     </div>
 

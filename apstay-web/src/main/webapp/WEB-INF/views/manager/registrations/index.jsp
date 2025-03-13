@@ -4,7 +4,7 @@
 <%@ taglib prefix="shared" tagdir="/WEB-INF/tags/shared" %>
 <%@ taglib prefix="f" uri="/tlds/functions" %>
 
-<manager:layout>
+<manager:layout title="Residents">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h3 class="h3 mb-0 text-gray-800">Account Registrations</h3>
         <a href="" class="d-sm-inline-block btn btn-secondary shadow-sm">
@@ -51,11 +51,6 @@
                     </td>
                 </tr>
             </c:forEach>
-            <c:if test="${empty registrations}">
-                <tr>
-                    <td colspan="5" class="text-center">No registrations found.</td>
-                </tr>
-            </c:if>
         </tbody>
     </table>
 </manager:layout>

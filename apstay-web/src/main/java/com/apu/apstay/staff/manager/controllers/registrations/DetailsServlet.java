@@ -1,8 +1,6 @@
 package com.apu.apstay.staff.manager.controllers.registrations;
 
-import com.apu.apstay.enums.ApprovalStatus;
 import com.apu.apstay.services.AccountRegistrationService;
-import com.apu.apstay.services.UnitService;
 import com.apu.apstay.staff.manager.models.viewmodels.registration.AccountRegistrationDetailsViewModel;
 import jakarta.ejb.EJB;
 import java.io.IOException;
@@ -21,9 +19,6 @@ public class DetailsServlet extends HttpServlet {
 
     @EJB
     private AccountRegistrationService accountRegistrationService;
-    
-    @EJB
-    private UnitService unitService;
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

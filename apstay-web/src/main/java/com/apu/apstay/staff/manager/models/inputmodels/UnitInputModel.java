@@ -17,6 +17,10 @@ public class UnitInputModel {
     @NotNull(message = "Floor number must not be null!")
     @Min(value = 1, message = "Floor number must be at least 1")
     private int floorNumber;
+    
+    @NotNull(message = "Capacity must not be null!")
+    @Min(value = 1, message = "Capacity must be at least 1")
+    private int capacity = 1;
 
     public Long getId() {
         return id;
@@ -40,5 +44,13 @@ public class UnitInputModel {
 
     public void setFloorNumber(int floorNumber) {
         this.floorNumber = floorNumber;
+    }
+    
+    public int getCapacity() {
+        return capacity;
+    }
+    
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }

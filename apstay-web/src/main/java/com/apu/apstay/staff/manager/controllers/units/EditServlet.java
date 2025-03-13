@@ -49,7 +49,9 @@ public class EditServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        String pathInfo = request.getPathInfo();
+        request.setAttribute("activeNav", "units");
+        
+        var pathInfo = request.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing unit id");
             return;
@@ -141,7 +143,8 @@ public class EditServlet extends HttpServlet {
         return new UnitUpdateCommand(
                 input.getUnitName(),
                 input.getFloorNumber(),
-                input.isOccupied()
+                input.getCapacity(),
+                input.isActive()
         );
     }
     // </editor-fold>

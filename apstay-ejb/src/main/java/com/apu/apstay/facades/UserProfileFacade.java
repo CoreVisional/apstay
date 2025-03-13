@@ -4,6 +4,7 @@ import com.apu.apstay.entities.UserProfile;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
 import java.util.List;
 
 /**
@@ -48,5 +49,11 @@ public class UserProfileFacade extends AbstractFacade<UserProfile> {
                 .getResultStream()
                 .findFirst()
                 .orElse(null);
+    }
+    
+    public List<Object[]> getGenderDistributionData() {
+        return getEntityManager()
+                .createQuery("SELECT up.gender, COUNT(up) FROM UserProfile up GROUP BY up.gender", Object[].class)
+                .getResultList();
     }
 }

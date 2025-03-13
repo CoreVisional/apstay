@@ -38,11 +38,6 @@
                     </td>
                 </tr>
             </c:forEach>
-            <c:if test="${empty staffs}">
-                <tr>
-                    <td colspan="4" class="text-center">No staffs found.</td>
-                </tr>
-            </c:if>
         </tbody>
     </table>
 </manager:layout>

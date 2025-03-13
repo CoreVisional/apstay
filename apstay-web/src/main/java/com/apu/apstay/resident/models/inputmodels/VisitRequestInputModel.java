@@ -9,8 +9,7 @@ import jakarta.validation.constraints.NotNull;
  * @author alexc
  */
 public class VisitRequestInputModel {
-    
-    // Visitor Information
+
     @NotBlank(message = "Visitor name must not be blank!")
     private String name;
     
@@ -22,8 +21,7 @@ public class VisitRequestInputModel {
     
     @NotBlank(message = "Phone number must not be blank!")
     private String phone;
-    
-    // Visit Request Information
+
     @NotBlank(message = "Select when this visit is scheduled")
     private String arrivalDateTime;
 

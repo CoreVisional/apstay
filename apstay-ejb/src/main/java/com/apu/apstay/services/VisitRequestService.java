@@ -2,7 +2,6 @@ package com.apu.apstay.services;
 
 import com.apu.apstay.commands.visits.VisitRequestCreateCommand;
 import com.apu.apstay.dtos.VisitRequestDto;
-import com.apu.apstay.entities.VisitCode;
 import com.apu.apstay.enums.VisitRequestStatus;
 import com.apu.apstay.exceptions.BusinessRulesException;
 import com.apu.apstay.facades.ResidentFacade;
@@ -14,7 +13,11 @@ import jakarta.ejb.Stateless;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -132,5 +135,80 @@ public class VisitRequestService {
                             .collect(Collectors.joining());
         return visitCodeFacade.findByCode(code) == null ? 
                code : generateVerificationCode();
+    }
+    
+    public Map<String, Object> getVisitAnalysisData() {
+        Map<String, Object> reportData = new HashMap<>();
+
+        int totalRequests = visitRequestFacade.countVisitRequests();
+        int approvedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.REACHED);
+        int pendingRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.SUBMITTED);
+        int rejectedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.CANCELLED);
+
+        reportData.put("totalRequests", totalRequests);
+        reportData.put("approvedRequests", approvedRequests);
+        reportData.put("pendingRequests", pendingRequests);
+        reportData.put("rejectedRequests", rejectedRequests);
+
+        List<Integer> statusDistribution = Arrays.asList(
+            approvedRequests,
+            pendingRequests,
+            rejectedRequests
+        );
+        reportData.put("statusDistribution", statusDistribution);
+
+        List<Object[]> dayOfWeekData = visitRequestFacade.getVisitRequestsByDayOfWeek();
+        int[] visitsByDay = new int[7];
+
+        Arrays.fill(visitsByDay, 0);
+
+        for (Object[] dayData : dayOfWeekData) {
+            int dayIndex = ((Number) dayData[0]).intValue();
+            int count = ((Number) dayData[1]).intValue();
+
+            int adjustedIndex = (dayIndex + 5) % 7;
+            visitsByDay[adjustedIndex] = count;
+        }
+
+        List<String> dayLabels = Arrays.asList(
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        );
+
+        List<Integer> dayData = new ArrayList<>();
+        for (int count : visitsByDay) {
+            dayData.add(count);
+        }
+
+        reportData.put("dayLabels", dayLabels);
+        reportData.put("dayData", dayData);
+
+        List<Object[]> mostVisitedUnitsData = visitRequestFacade.getMostVisitedUnits(5);
+        List<Map<String, Object>> mostVisitedUnits = new ArrayList<>();
+
+        for (Object[] unitData : mostVisitedUnitsData) {
+            Map<String, Object> unit = new HashMap<>();
+
+            String unitName = (String) unitData[0];
+            int floorNumber = ((Number) unitData[1]).intValue();
+            int totalVisits = ((Number) unitData[2]).intValue();
+            int unitApprovedVisits = ((Number) unitData[3]).intValue();
+            int unitRejectedVisits = ((Number) unitData[4]).intValue();
+
+            double percentageOfTotal = totalRequests > 0 ? 
+                    (totalVisits * 100.0 / totalRequests) : 0;
+
+            unit.put("unitName", unitName);
+            unit.put("floorNumber", floorNumber);
+            unit.put("totalVisits", totalVisits);
+            unit.put("approvedVisits", unitApprovedVisits);
+            unit.put("rejectedVisits", unitRejectedVisits);
+            unit.put("percentageOfTotal", percentageOfTotal);
+
+            mostVisitedUnits.add(unit);
+        }
+
+        reportData.put("mostVisitedUnits", mostVisitedUnits);
+
+        return reportData;
     }
 }

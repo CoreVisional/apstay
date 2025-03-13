@@ -1,6 +1,6 @@
 package com.apu.apstay.staff.manager.controllers.residents;
 
-import com.apu.apstay.services.UserService;
+import com.apu.apstay.services.ResidentService;
 import jakarta.ejb.EJB;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -13,11 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author alexc
  */
-@WebServlet(name = "ManagerResidentDeactivateServlet", urlPatterns = {"/manager/residents/deactivate"})
+@WebServlet(name = "ResidentDeactivateServlet", urlPatterns = {"/manager/residents/deactivate"})
 public class DeactivateServlet extends HttpServlet {
 
     @EJB
-    private UserService userService;
+    private ResidentService residentService;
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -35,9 +35,9 @@ public class DeactivateServlet extends HttpServlet {
         var idParam = request.getParameter("id");
         
         try {
-            var userId = Long.parseLong(idParam);
+            var residentId  = Long.parseLong(idParam);
 
-            userService.deactivateUser(userId);
+             residentService.deactivateResident(residentId);
             
             request.getSession().setAttribute("success", "Resident successfully deactivated.");
         } catch (NumberFormatException e) {
@@ -55,6 +55,6 @@ public class DeactivateServlet extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
-
+    }
+    // </editor-fold>
 }

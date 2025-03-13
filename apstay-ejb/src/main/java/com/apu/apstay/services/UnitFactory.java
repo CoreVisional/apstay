@@ -20,12 +20,17 @@ public class UnitFactory {
             return null;
         }
 
+        int currentOccupancy = entity.getResidents() != null ? entity.getResidents().size() : 0;
+        boolean hasAvailableSpace = currentOccupancy < entity.getCapacity();
+
         return new UnitDto(
                 entity.getId(),
                 entity.getUnitName(),
                 entity.getFloorNumber(),
-                entity.isOccupied(),
+                entity.getCapacity(),
                 entity.isActive(),
+                currentOccupancy,
+                hasAvailableSpace,
                 entity.getCreatedAt(),
                 entity.getCreatedBy(),
                 entity.getModifiedAt(),
