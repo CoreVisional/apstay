@@ -95,4 +95,16 @@ public class UnitFacade extends AbstractFacade<Unit> {
                 "ORDER BY u.capacity")
                 .getResultList();
     }
+    
+    public List<Object[]> getUnitDetailsForReport() {
+        return em.createQuery(
+            "SELECT u.unitName, u.floorNumber, u.capacity, " +
+            "COUNT(r) as residentCount " +
+            "FROM Unit u " +
+            "LEFT JOIN u.residents r " +
+            "WHERE u.active = true " +
+            "GROUP BY u.unitName, u.floorNumber, u.capacity " +
+            "ORDER BY u.floorNumber, u.unitName"
+        ).getResultList();
+    }
 }

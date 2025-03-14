@@ -65,7 +65,6 @@
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/js/sb-admin-2.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/lib/sb-admin-2/vendor/chart.js/Chart.min.js"></script>
-    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.8.0/html2pdf.bundle.min.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap4.min.js"></script>
     <script>

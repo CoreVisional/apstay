@@ -41,7 +41,7 @@ public class AccountRegistration extends BaseModel {
     private String name;
     
     @NotBlank
-    @Column(name = "identity_number", nullable = false)
+    @Column(nullable = false)
     private String identityNumber;
     
     @NotBlank

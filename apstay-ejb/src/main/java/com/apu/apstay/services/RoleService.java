@@ -5,6 +5,7 @@ import com.apu.apstay.facades.RoleFacade;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -21,8 +22,6 @@ public class RoleService {
     private RoleFactory roleFactory;
     
     // <editor-fold defaultstate="collapsed" desc="Implementations of RoleService">
-    
-    
     public List<RoleDto> getStaffRoles() {
         return roleFacade.findAll().stream()
                 .filter(role -> role.getName().equals("manager") || role.getName().equals("security"))
@@ -47,6 +46,11 @@ public class RoleService {
             }
         }
         return _assignableRoles;
+    }
+
+    public boolean hasRole(Set<RoleDto> userRoles, String roleName) {
+        return userRoles.stream()
+                .anyMatch(role -> role.name().equalsIgnoreCase(roleName));
     }
     // </editor-fold>
 }

@@ -97,7 +97,7 @@
             <dd class="col-sm-10">${registration.address()}</dd>
             
             <dt class="col-sm-2">Hostel Unit</dt>
-            <dd class="col-sm-10">${registration.unitName()}</dd>
+            <dd class="col-sm-10">${registration.unitName()}-${registration.floorNumber()}</dd>
             
             <dt class="col-sm-2">Submitted On</dt>
             <dd class="col-sm-10">${f:formatLocalDateTime(registration.createdAt(), 'MM/dd/yyyy hh:mm a')}</dd>

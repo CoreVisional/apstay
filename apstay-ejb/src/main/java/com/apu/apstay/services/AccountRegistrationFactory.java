@@ -2,6 +2,7 @@ package com.apu.apstay.services;
 
 import com.apu.apstay.dtos.AccountRegistrationDto;
 import com.apu.apstay.entities.AccountRegistration;
+import com.apu.apstay.utils.EncryptionUtil;
 import jakarta.ejb.Stateless;
 
 /**
@@ -24,6 +25,8 @@ public class AccountRegistrationFactory {
         var reviewerId = entity.getReviewer() != null ? entity.getReviewer().getId() : null;
         var unitId = entity.getUnit() != null ? entity.getUnit().getId() : null;
         var unitName = entity.getUnit() != null ? entity.getUnit().getUnitName() : null;
+        var floorNumber = entity.getUnit() != null ? entity.getUnit().getFloorNumber() : null;
+        var identityNumber = EncryptionUtil.decrypt(entity.getIdentityNumber());
         
         return new AccountRegistrationDto(
                 entity.getId(),
@@ -32,12 +35,13 @@ public class AccountRegistrationFactory {
                 unitId,
                 null,
                 entity.getName(),
-                entity.getIdentityNumber(),
+                identityNumber,
                 entity.getEmail(),
                 entity.getGender(),
                 entity.getPhone(),
                 entity.getAddress(),
                 unitName,
+                floorNumber,
                 entity.getStatus(),
                 entity.getRemarks(),
                 entity.getCreatedAt(),

@@ -36,14 +36,14 @@ public class VisitAnalysisServlet extends HttpServlet {
             throws ServletException, IOException {
 
         request.setAttribute("activeNav", "reports");
-        
+
         var reportData = visitRequestService.getVisitAnalysisData();
 
         var vm = new VisitAnalysisReportViewModel(
             (int) reportData.get("totalRequests"),
-            (int) reportData.get("approvedRequests"),
-            (int) reportData.get("pendingRequests"),
-            (int) reportData.get("rejectedRequests"),
+            (int) reportData.get("reachedRequests"),
+            (int) reportData.get("submittedRequests"),
+            (int) reportData.get("cancelledRequests"),
             (List<Integer>) reportData.get("statusDistribution"),
             (List<String>) reportData.get("dayLabels"),
             (List<Integer>) reportData.get("dayData"),

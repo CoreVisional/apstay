@@ -43,9 +43,12 @@ public class HomeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
         request.setAttribute("activeNav", "staffs");
 
         var currentUserId = sessionContext.getCurrentUserId();
+        request.setAttribute("currentUserId", currentUserId);
+        
         var currentUser = (UserDto) null;
         if (currentUserId != null) {
             currentUser = userService.getById(currentUserId);

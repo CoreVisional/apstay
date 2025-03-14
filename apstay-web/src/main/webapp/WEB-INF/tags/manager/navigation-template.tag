@@ -16,7 +16,7 @@
 
 <li class="nav-item ${activeNav == 'staffs' ? 'active' : ''}">
     <a class="nav-link" href="${pageContext.request.contextPath}/manager/staffs">
-        <i class="fa-solid fa-person-military-pointing"></i>
+        <i class="fa-solid fa-user-tie"></i>
         <span>Staffs</span>
     </a>
 </li>
@@ -32,6 +32,13 @@
     <a class="nav-link" href="${pageContext.request.contextPath}/manager/units">
         <i class="fa-solid fa-building"></i>
         <span>Units</span>
+    </a>
+</li>
+
+<li class="nav-item ${activeNav == 'visitrequests' ? 'active' : ''}">
+    <a class="nav-link" href="${pageContext.request.contextPath}/manager/visit-logs">
+        <i class="fa-solid fa-book"></i>
+        <span>Visit Logs</span>
     </a>
 </li>
 

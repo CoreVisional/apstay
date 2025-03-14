@@ -2,6 +2,7 @@ package com.apu.apstay.services;
 
 import com.apu.apstay.commands.visits.VisitRequestCreateCommand;
 import com.apu.apstay.dtos.VisitRequestDto;
+import com.apu.apstay.entities.VisitRequest;
 import com.apu.apstay.enums.VisitRequestStatus;
 import com.apu.apstay.exceptions.BusinessRulesException;
 import com.apu.apstay.facades.ResidentFacade;
@@ -60,6 +61,10 @@ public class VisitRequestService {
         return visitRequestFacade.findAll().stream()
                 .map(visitRequestFactory::toDto)
                 .collect(Collectors.toList());
+    }
+    
+    public List<VisitRequest> getAllWithDetails() {
+        return visitRequestFacade.findAllWithDetails();
     }
     
     public List<VisitRequestDto> getAllByResidentId(Long residentId) {
@@ -141,19 +146,19 @@ public class VisitRequestService {
         Map<String, Object> reportData = new HashMap<>();
 
         int totalRequests = visitRequestFacade.countVisitRequests();
-        int approvedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.REACHED);
-        int pendingRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.SUBMITTED);
-        int rejectedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.CANCELLED);
+        int reachedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.REACHED);
+        int submittedRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.SUBMITTED);
+        int cancelledRequests = visitRequestFacade.countVisitRequestsByStatus(VisitRequestStatus.CANCELLED);
 
         reportData.put("totalRequests", totalRequests);
-        reportData.put("approvedRequests", approvedRequests);
-        reportData.put("pendingRequests", pendingRequests);
-        reportData.put("rejectedRequests", rejectedRequests);
+        reportData.put("reachedRequests", reachedRequests);
+        reportData.put("submittedRequests", submittedRequests);
+        reportData.put("cancelledRequests", cancelledRequests);
 
         List<Integer> statusDistribution = Arrays.asList(
-            approvedRequests,
-            pendingRequests,
-            rejectedRequests
+            reachedRequests,
+            submittedRequests,
+            cancelledRequests
         );
         reportData.put("statusDistribution", statusDistribution);
 
@@ -191,8 +196,8 @@ public class VisitRequestService {
             String unitName = (String) unitData[0];
             int floorNumber = ((Number) unitData[1]).intValue();
             int totalVisits = ((Number) unitData[2]).intValue();
-            int unitApprovedVisits = ((Number) unitData[3]).intValue();
-            int unitRejectedVisits = ((Number) unitData[4]).intValue();
+            int unitReachedVisits = ((Number) unitData[3]).intValue();
+            int unitCancelledVisits = ((Number) unitData[4]).intValue();
 
             double percentageOfTotal = totalRequests > 0 ? 
                     (totalVisits * 100.0 / totalRequests) : 0;
@@ -200,8 +205,8 @@ public class VisitRequestService {
             unit.put("unitName", unitName);
             unit.put("floorNumber", floorNumber);
             unit.put("totalVisits", totalVisits);
-            unit.put("approvedVisits", unitApprovedVisits);
-            unit.put("rejectedVisits", unitRejectedVisits);
+            unit.put("reachedVisits", unitReachedVisits);
+            unit.put("cancelledVisits", unitCancelledVisits);
             unit.put("percentageOfTotal", percentageOfTotal);
 
             mostVisitedUnits.add(unit);

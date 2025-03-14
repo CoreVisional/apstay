@@ -20,6 +20,7 @@ public record AccountRegistrationDto(
         String phone,
         String address,
         String unitName,
+        int floorNumber,
         ApprovalStatus status,
         String remarks,
         LocalDateTime createdAt,

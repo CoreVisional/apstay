@@ -4,7 +4,6 @@ import com.apu.apstay.entities.UserProfile;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
 import java.util.List;
 
 /**

@@ -18,6 +18,7 @@ public record AccountRegistrationDetailsViewModel (
         String phone,
         String address,
         String unitName,
+        int floorNumber,
         ApprovalStatus status,
         String remarks,
         LocalDateTime createdAt

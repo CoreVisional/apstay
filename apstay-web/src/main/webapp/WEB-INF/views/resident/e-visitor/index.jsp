@@ -74,9 +74,6 @@
                         </c:choose>
                     </td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/resident/visits/details/${visit.id()}" class="btn btn-primary btn-sm">
-                            <i class="fas fa-info fa-sm fa-fw"></i> Details
-                        </a>
                         <a href="${pageContext.request.contextPath}/resident/visits/edit/${visit.id()}" class="btn btn-warning btn-sm">
                             <i class="fas fa-pen fa-sm fa-fw"></i> Edit
                         </a>
@@ -91,6 +88,29 @@
         </tbody>
     </table>
     
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrCodeModalLabel">Verification QR Code</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="qrCodeContainer" class="mb-3"></div>
+                    <p>Verification Code: <span id="modalVerificationCode" class="font-weight-bold"></span></p>
+                    <p class="text-muted small">Share this QR code with your visitor. They can show it to security when they arrive.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Verification Code Modal -->
     <c:if test="${not empty sessionScope.verificationCode}">
         <div class="modal fade" id="verificationCodeModal" tabindex="-1" role="dialog" aria-labelledby="verificationCodeModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">

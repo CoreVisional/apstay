@@ -1,11 +1,10 @@
 <%@ taglib prefix="manager" tagdir="/WEB-INF/tags/manager" %>
-<manager:layout>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<manager:layout title="Approval Efficiency Report">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Registration Approval Efficiency</h1>
-        <a href="${pageContext.request.contextPath}/manager/reports/approval-efficiency/pdf" 
-           class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate PDF
-        </a>
     </div>
 
     <!-- Summary Statistics Cards -->
@@ -17,7 +16,9 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Average Approval Time</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">1.4 days</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <fmt:formatNumber value="${reportData.averageApprovalTime()}" pattern="0.0"/> days
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-clock fa-2x text-gray-300"></i>
@@ -34,7 +35,9 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Approval Rate</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">86%</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <fmt:formatNumber value="${reportData.approvalRate()}" pattern="0"/>%
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-check-circle fa-2x text-gray-300"></i>
@@ -51,7 +54,7 @@
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Pending Registrations</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${reportData.pendingCount()}</div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-hourglass-half fa-2x text-gray-300"></i>
@@ -106,30 +109,35 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>James Wilson</td>
-                                    <td>A-202</td>
-                                    <td>1</td>
-                                    <td><span class="badge badge-success">Approved</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Emily Davis</td>
-                                    <td>B-105</td>
-                                    <td>1</td>
-                                    <td><span class="badge badge-success">Approved</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Alex Johnson</td>
-                                    <td>C-301</td>
-                                    <td>3</td>
-                                    <td><span class="badge badge-danger">Rejected</span></td>
-                                </tr>
-                                <tr>
-                                    <td>Sophia Martinez</td>
-                                    <td>D-405</td>
-                                    <td>Pending</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                </tr>
+                                <c:forEach items="${reportData.recentRegistrations()}" var="registration">
+                                    <tr>
+                                        <td>${registration.get('applicantName')}</td>
+                                        <td>${registration.get('unitName')}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${registration.get('daysToProcess') != null}">
+                                                    ${registration.get('daysToProcess')}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Pending
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${registration.get('status') == 'Approved'}">
+                                                    <span class="badge badge-success">Approved</span>
+                                                </c:when>
+                                                <c:when test="${registration.get('status') == 'Rejected'}">
+                                                    <span class="badge badge-danger">Rejected</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge badge-warning">Pending</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
                             </tbody>
                         </table>
                     </div>
@@ -144,6 +152,13 @@
             Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
             Chart.defaults.global.defaultFontColor = '#858796';
 
+            // Prepare chart data
+            var statusData = [
+                <c:forEach items="${reportData.statusDistribution()}" var="value" varStatus="status">
+                    ${value}<c:if test="${!status.last}">,</c:if>
+                </c:forEach>
+            ];
+
             // Pie Chart - Approval Status
             var statusCtx = document.getElementById("approvalStatusChart");
             var approvalStatusChart = new Chart(statusCtx, {
@@ -151,7 +166,7 @@
                 data: {
                     labels: ["Approved", "Rejected", "Pending"],
                     datasets: [{
-                        data: [86, 14, 12],
+                        data: statusData,
                         backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e'],
                         hoverBackgroundColor: ['#17a673', '#be2617', '#dda20a'],
                         hoverBorderColor: "rgba(234, 236, 244, 1)",

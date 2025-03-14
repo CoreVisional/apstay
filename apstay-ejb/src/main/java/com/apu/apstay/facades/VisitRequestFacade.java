@@ -40,7 +40,20 @@ public class VisitRequestFacade extends AbstractFacade<VisitRequest> {
             return null;
         }
     }
-
+    
+    public List<VisitRequest> findAllWithDetails() {
+        return em.createQuery(
+                "SELECT DISTINCT vr FROM VisitRequest vr " +
+                "LEFT JOIN FETCH vr.visitor v " +
+                "LEFT JOIN FETCH vr.resident r " +
+                "LEFT JOIN FETCH r.user u " +
+                "LEFT JOIN FETCH u.userProfile up " +
+                "LEFT JOIN FETCH r.unit unit " +
+                "ORDER BY vr.arrivalDateTime DESC",
+                VisitRequest.class
+            ).getResultList();
+    }
+    
     public int countVisitRequests() {
         return ((Number) em.createQuery("SELECT COUNT(vr) FROM VisitRequest vr")
                 .getSingleResult()).intValue();
@@ -68,14 +81,14 @@ public class VisitRequestFacade extends AbstractFacade<VisitRequest> {
                 "   res.unit.unitName, " +
                 "   res.unit.floorNumber, " +
                 "   COUNT(vr) as totalVisits, " +
-                "   SUM(CASE WHEN vr.status = :approvedStatus THEN 1 ELSE 0 END) as approvedVisits, " +
-                "   SUM(CASE WHEN vr.status = :rejectedStatus THEN 1 ELSE 0 END) as rejectedVisits " +
+                "   SUM(CASE WHEN vr.status = :reachedStatus THEN 1 ELSE 0 END) as reachedVisits, " +
+                "   SUM(CASE WHEN vr.status = :cancelledStatus THEN 1 ELSE 0 END) as cancelledVisits " +
                 "FROM VisitRequest vr " +
                 "JOIN vr.resident res " +
                 "GROUP BY res.unit.unitName, res.unit.floorNumber " +
                 "ORDER BY totalVisits DESC")
-                .setParameter("approvedStatus", VisitRequestStatus.REACHED)
-                .setParameter("rejectedStatus", VisitRequestStatus.CANCELLED)
+                .setParameter("reachedStatus", VisitRequestStatus.REACHED)
+                .setParameter("cancelledStatus", VisitRequestStatus.CANCELLED)
                 .setMaxResults(limit)
                 .getResultList();
     }

@@ -23,6 +23,11 @@
                             <input type="text" id="digit5" class="form-control verification-digit text-center font-weight-bold mx-1" maxlength="1" pattern="[0-9]" inputmode="numeric">
                             <input type="text" id="digit6" class="form-control verification-digit text-center font-weight-bold mx-1" maxlength="1" pattern="[0-9]" inputmode="numeric">
                         </div>
+                        <div class="text-center mt-3">
+                            <button type="button" id="scanButton" class="btn btn-primary">
+                                <i class="fas fa-qrcode mr-2"></i>Scan QR Code
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -52,4 +57,23 @@
         <c:remove var="errorModal" scope="session" />
         <c:remove var="errorMessage" scope="session" />
     </c:if>
+    
+    <div class="modal fade" id="scannerModal" tabindex="-1" role="dialog" aria-labelledby="scannerModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="scannerModalLabel">QR Scanner</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <video id="scanner" style="width: 100%;" autoplay></video>
+            <div id="scanner-error" class="alert alert-danger d-none mt-2">
+              <span id="error-message"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </security:layout>

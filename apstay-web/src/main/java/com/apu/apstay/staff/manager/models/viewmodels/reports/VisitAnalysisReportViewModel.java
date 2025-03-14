@@ -9,9 +9,9 @@ import java.util.Map;
  */
 public record VisitAnalysisReportViewModel(
         int totalVisitRequests,
-        int approvedRequests,
-        int pendingRequests,
-        int rejectedRequests,
+        int reachedRequests,
+        int submittedRequests,
+        int cancelledRequests,
         List<Integer> statusDistributionData,
         List<String> dayLabels,
         List<Integer> dayData,

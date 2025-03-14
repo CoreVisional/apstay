@@ -30,7 +30,7 @@ public class UserProfile extends BaseModel {
     private String name;
     
     @NotBlank
-    @Column(name = "identity_number", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String identityNumber;
 
     @NotNull

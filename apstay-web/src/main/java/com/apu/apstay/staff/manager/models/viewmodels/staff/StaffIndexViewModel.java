@@ -4,6 +4,7 @@ import com.apu.apstay.dtos.UserDto;
 import com.apu.apstay.dtos.UserProfileDto;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -24,7 +25,7 @@ public class StaffIndexViewModel {
         this.fullName = profile != null ? profile.name() : "";
         this.isActive = user.isActive();
         this.role = user.roles().stream()
-                .map(r -> r.name())
+                .map(r -> StringUtils.capitalize(r.name()))
                 .collect(Collectors.joining(", "));
     }
     

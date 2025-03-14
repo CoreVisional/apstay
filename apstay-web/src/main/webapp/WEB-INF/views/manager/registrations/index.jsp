@@ -7,9 +7,6 @@
 <manager:layout title="Residents">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h3 class="h3 mb-0 text-gray-800">Account Registrations</h3>
-        <a href="" class="d-sm-inline-block btn btn-secondary shadow-sm">
-            <i class="fa-solid fa-clock-rotate-left"></i> History
-        </a>
     </div>
     
     <shared:notice-template />

@@ -1,5 +1,7 @@
 package com.apu.apstay.staff.manager.controllers.reports.pdfs;
 
+import com.apu.apstay.services.UnitService;
+import jakarta.ejb.EJB;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,6 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -23,6 +27,9 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 @WebServlet(name = "UnitOccupancyPDFServlet", urlPatterns = {"/manager/reports/unit-occupancy/pdf"})
 public class UnitOccupancyPDFServlet extends HttpServlet {
 
+    @EJB
+    private UnitService unitService;
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -41,46 +48,44 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
         response.setHeader("Content-Disposition", "attachment; filename=unit-occupancy-report.pdf");
         
         try {
-            // Create a new PDF document
+            Map<String, Object> reportData = unitService.getUnitOccupancyReportData();
+
+            int totalUnits = (int) reportData.get("totalUnits");
+            int activeUnits = (int) reportData.get("activeUnits");
+            int inactiveUnits = (int) reportData.get("inactiveUnits");
+            int fullyOccupiedUnits = (int) reportData.get("fullyOccupiedUnits");
+            int vacantUnits = (int) reportData.get("vacantUnits");
+
+            int occupiedUnits = activeUnits - vacantUnits;
+            int occupancyRate = totalUnits > 0 ? (occupiedUnits * 100 / totalUnits) : 0;
+
             var document = new PDDocument();
             var page = new PDPage(PDRectangle.A4);
             document.addPage(page);
             
             var boldFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD);
             var regularFont = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
-            
-            // Create a content stream for writing to the page
+
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
-            
-            // Add title
+
             contentStream.beginText();
             contentStream.setFont(boldFont, 14);
             contentStream.newLineAtOffset(50, 750);
             contentStream.showText("Unit Occupancy Report");
             contentStream.endText();
-            
-            // Add date
+
             contentStream.beginText();
             contentStream.setFont(regularFont, 12);
             contentStream.newLineAtOffset(50, 730);
             contentStream.showText("Generated: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             contentStream.endText();
-            
-            // Add summary statistics
+
             contentStream.beginText();
             contentStream.setFont(boldFont, 12);
             contentStream.newLineAtOffset(50, 700);
             contentStream.showText("Summary Statistics");
             contentStream.endText();
-            
-            // Get the same data you use in your view
-            // This is where you'd add your actual data retrieval logic
-            int totalUnits = 120;
-            int occupancyRate = 78;
-            int fullyOccupied = 72;
-            int vacant = 26;
-            
-            // Add summary data
+
             contentStream.setFont(regularFont, 10);
             
             contentStream.beginText();
@@ -95,39 +100,39 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
             
             contentStream.beginText();
             contentStream.newLineAtOffset(50, 650);
-            contentStream.showText("Fully Occupied Units: " + fullyOccupied + " (" + (fullyOccupied * 100 / totalUnits) + "%)");
+            int fullyOccupiedPercent = totalUnits > 0 ? (fullyOccupiedUnits * 100 / totalUnits) : 0;
+            contentStream.showText("Fully Occupied Units: " + fullyOccupiedUnits + " (" + fullyOccupiedPercent + "%)");
             contentStream.endText();
             
             contentStream.beginText();
             contentStream.newLineAtOffset(50, 635);
-            contentStream.showText("Vacant Units: " + vacant + " (" + (vacant * 100 / totalUnits) + "%)");
+            int vacantPercent = totalUnits > 0 ? (vacantUnits * 100 / totalUnits) : 0;
+            contentStream.showText("Vacant Units: " + vacantUnits + " (" + vacantPercent + "%)");
             contentStream.endText();
             
-            // Create a table for detailed unit data
-            float y = 600;
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 620);
+            contentStream.showText("Active Units: " + activeUnits);
+            contentStream.endText();
+            
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 605);
+            contentStream.showText("Inactive Units: " + inactiveUnits);
+            contentStream.endText();
+
+            float y = 575;
             float margin = 50;
             float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
             float rowHeight = 20;
-            
-            // Fetch your detailed unit data here
-            // This is where you'd add your unit data retrieval logic
-            
-            // Add table header
+
             drawTableHeader(contentStream, margin, y, tableWidth, boldFont);
-            
-            // Add table rows
+
+            List<String[]> unitData = unitService.getUnitDetailsForPdfReport();
+
             y -= rowHeight;
-            // For each unit in your data...
-            String[][] unitData = {
-                {"A-101", "1", "2", "2", "100%", "Fully Occupied"},
-                {"A-102", "1", "3", "2", "67%", "Partially Occupied"},
-                {"A-103", "1", "4", "0", "0%", "Vacant"},
-            };
-            
             for (String[] row : unitData) {
                 drawTableRow(contentStream, margin, y, tableWidth, row, regularFont);
                 y -= rowHeight;
-                // Check if we need a new page
                 if (y <= 100) {
                     contentStream.close();
                     page = new PDPage(PDRectangle.A4);
@@ -138,18 +143,15 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
                     y -= rowHeight;
                 }
             }
-            
-            // Close the content stream
+
             contentStream.close();
-            
-            // Save the document to response output stream
+
             document.save(response.getOutputStream());
             document.close();
             
-        } catch (Exception e) {
+        } catch (IOException e) {
             response.setContentType("text/html");
             response.getWriter().write("Error generating PDF: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -160,21 +162,20 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Unit Occupancy Report PDF Generator";
     }
     
     private void drawTableHeader(PDPageContentStream contentStream, float x, float y, float width, PDFont font) throws IOException {
-        // Table headers
+
         String[] headers = {"Unit Name", "Floor", "Capacity", "Current Residents", "Occupancy Rate", "Status"};
 
-        // Calculate cell widths proportionally based on content
         float[] columnWidths = {
-            width * 0.15f,  // Unit Name - 15%
-            width * 0.10f,  // Floor - 10%
-            width * 0.12f,  // Capacity - 12%
-            width * 0.20f,  // Current Residents - 20%
-            width * 0.18f,  // Occupancy Rate - 18%
-            width * 0.25f   // Status - 25%
+            width * 0.15f,  // Unit Name
+            width * 0.10f,  // Floor
+            width * 0.12f,  // Capacity
+            width * 0.20f,  // Current Residents
+            width * 0.18f,  // Occupancy Rate
+            width * 0.25f   // Status
         };
 
         contentStream.setFont(font, 10);
@@ -186,14 +187,11 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
             contentStream.showText(headers[i]);
             contentStream.endText();
 
-            // Move to next column position
             xPosition += columnWidths[i];
         }
 
-        // Draw table lines
         contentStream.setLineWidth(0.5f);
 
-        // Draw horizontal lines (top and bottom of header)
         contentStream.moveTo(x, y);
         contentStream.lineTo(x + width, y);
         contentStream.stroke();
@@ -202,7 +200,6 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
         contentStream.lineTo(x + width, y - 20);
         contentStream.stroke();
 
-        // Draw vertical lines between columns
         xPosition = x;
         for (int i = 0; i < columnWidths.length; i++) {
             contentStream.moveTo(xPosition, y);
@@ -211,21 +208,20 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
             xPosition += columnWidths[i];
         }
 
-        // Draw final vertical line
         contentStream.moveTo(x + width, y);
         contentStream.lineTo(x + width, y - 20);
         contentStream.stroke();
     }
     
     private void drawTableRow(PDPageContentStream contentStream, float x, float y, float width, String[] rowData, PDFont font) throws IOException {
-        // Calculate cell widths proportionally based on content (same as header)
+
         float[] columnWidths = {
-            width * 0.15f,  // Unit Name - 15%
-            width * 0.10f,  // Floor - 10%
-            width * 0.12f,  // Capacity - 12%
-            width * 0.20f,  // Current Residents - 20%
-            width * 0.18f,  // Occupancy Rate - 18%
-            width * 0.25f   // Status - 25%
+            width * 0.15f,  // Unit Name
+            width * 0.10f,  // Floor
+            width * 0.12f,  // Capacity
+            width * 0.20f,  // Current Residents
+            width * 0.18f,  // Occupancy Rate
+            width * 0.25f   // Status
         };
 
         contentStream.setFont(font, 10);
@@ -237,17 +233,14 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
             contentStream.showText(rowData[i]);
             contentStream.endText();
 
-            // Move to next column position
             xPosition += columnWidths[i];
         }
 
-        // Draw horizontal line at bottom of row
         contentStream.setLineWidth(0.5f);
         contentStream.moveTo(x, y - 20);
         contentStream.lineTo(x + width, y - 20);
         contentStream.stroke();
 
-        // Draw vertical lines between columns
         xPosition = x;
         for (int i = 0; i < columnWidths.length; i++) {
             contentStream.moveTo(xPosition, y);
@@ -256,7 +249,6 @@ public class UnitOccupancyPDFServlet extends HttpServlet {
             xPosition += columnWidths[i];
         }
 
-        // Draw final vertical line
         contentStream.moveTo(x + width, y);
         contentStream.lineTo(x + width, y - 20);
         contentStream.stroke();

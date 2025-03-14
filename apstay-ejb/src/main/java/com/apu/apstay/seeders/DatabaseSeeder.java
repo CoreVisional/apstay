@@ -24,6 +24,10 @@ public class DatabaseSeeder {
     private ResidentSeeder residentSeeder;
     @Inject
     private SecuritySeeder securitySeeder;
+    @Inject
+    private VisitRequestSeeder visitRequestSeeder;
+    @Inject
+    private AccountRegistrationSeeder accountRegistrationSeeder;
     
     @PostConstruct
     public void init() {
@@ -33,5 +37,7 @@ public class DatabaseSeeder {
         unitSeeder.seed();
         residentSeeder.seed();
         securitySeeder.seed();
+        visitRequestSeeder.seed();
+        accountRegistrationSeeder.seed();
     }
 }

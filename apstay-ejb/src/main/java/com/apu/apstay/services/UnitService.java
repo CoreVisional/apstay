@@ -149,6 +149,41 @@ public class UnitService extends BaseService {
 
         return reportData;
     }
+    
+    public List<String[]> getUnitDetailsForPdfReport() {
+        List<String[]> unitData = new ArrayList<>();
+
+        List<Object[]> unitDetails = unitFacade.getUnitDetailsForReport();
+
+        for (Object[] row : unitDetails) {
+            var unitName = (String) row[0];
+            int floorNumber = ((Number) row[1]).intValue();
+            int capacity = ((Number) row[2]).intValue();
+            long residentCount = ((Number) row[3]).longValue();
+
+            int occupancyRate = capacity > 0 ? (int)(residentCount * 100 / capacity) : 0;
+
+            String status;
+            if (residentCount == 0) {
+                status = "Vacant";
+            } else if (residentCount == capacity) {
+                status = "Fully Occupied";
+            } else {
+                status = "Partially Occupied";
+            }
+
+            unitData.add(new String[]{
+                unitName,
+                String.valueOf(floorNumber),
+                String.valueOf(capacity),
+                String.valueOf(residentCount),
+                occupancyRate + "%",
+                status
+            });
+        }
+
+        return unitData;
+    }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Private Implementations">

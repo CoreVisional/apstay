@@ -25,7 +25,7 @@ public class Visitor extends BaseModel {
     private String name;
     
     @NotBlank
-    @Column(name = "identity_number", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String identityNumber;
     
     @Column(nullable = false)

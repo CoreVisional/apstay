@@ -361,26 +361,6 @@
                     },
                 }
             });
-
-            // PDF Generation functionality
-            document.querySelector('a.btn-primary.shadow-sm').addEventListener('click', function(e) {
-                e.preventDefault();
-
-                // Create a clone of the report content
-                const element = document.querySelector('.container-fluid');
-
-                // Options for PDF generation
-                const opt = {
-                    margin:       [10, 10, 10, 10],
-                    filename:     'unit-occupancy-report.pdf',
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                // Generate PDF
-                html2pdf(element, opt);
-            });
         });
     </script>
 </manager:layout>

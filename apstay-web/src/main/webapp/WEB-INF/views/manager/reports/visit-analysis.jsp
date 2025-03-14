@@ -4,10 +4,6 @@
 <manager:layout>
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Visit Request Analysis</h1>
-        <a href="${pageContext.request.contextPath}/manager/reports/visit-analysis/pdf" 
-           class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-            <i class="fas fa-download fa-sm text-white-50"></i> Generate PDF
-        </a>
     </div>
 
     <!-- Summary Statistics Cards -->
@@ -35,10 +31,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Approved Requests</div>
-                            <c:set var="approvedPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.approvedRequests() * 100 / reportData.totalVisitRequests() : 0}" />
+                                Reached Requests</div>
+                            <c:set var="reachedPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.reachedRequests() * 100 / reportData.totalVisitRequests() : 0}" />
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                ${reportData.approvedRequests()} (<fmt:formatNumber value="${approvedPercentage}" pattern="0"/>%)
+                                ${reportData.reachedRequests()} (<fmt:formatNumber value="${reachedPercentage}" pattern="0"/>%)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -55,10 +51,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Pending Requests</div>
-                            <c:set var="pendingPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.pendingRequests() * 100 / reportData.totalVisitRequests() : 0}" />
+                                Submitted Requests</div>
+                            <c:set var="submittedPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.submittedRequests() * 100 / reportData.totalVisitRequests() : 0}" />
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                ${reportData.pendingRequests()} (<fmt:formatNumber value="${pendingPercentage}" pattern="0"/>%)
+                                ${reportData.submittedRequests()} (<fmt:formatNumber value="${submittedPercentage}" pattern="0"/>%)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -75,10 +71,10 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                Rejected Requests</div>
-                            <c:set var="rejectedPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.rejectedRequests() * 100 / reportData.totalVisitRequests() : 0}" />
+                                Cancelled Requests</div>
+                            <c:set var="cancelledPercentage" value="${reportData.totalVisitRequests() > 0 ? reportData.cancelledRequests() * 100 / reportData.totalVisitRequests() : 0}" />
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                ${reportData.rejectedRequests()} (<fmt:formatNumber value="${rejectedPercentage}" pattern="0"/>%)
+                                ${reportData.cancelledRequests()} (<fmt:formatNumber value="${cancelledPercentage}" pattern="0"/>%)
                             </div>
                         </div>
                         <div class="col-auto">
@@ -117,13 +113,13 @@
                     </div>
                     <div class="mt-4 text-center small">
                         <span class="mr-2">
-                            <i class="fas fa-circle text-success"></i> Approved
+                            <i class="fas fa-circle text-success"></i> Reached
                         </span>
                         <span class="mr-2">
-                            <i class="fas fa-circle text-warning"></i> Pending
+                            <i class="fas fa-circle text-warning"></i> Submitted
                         </span>
                         <span class="mr-2">
-                            <i class="fas fa-circle text-danger"></i> Rejected
+                            <i class="fas fa-circle text-danger"></i> Cancelled
                         </span>
                     </div>
                 </div>
@@ -144,8 +140,8 @@
                             <th>Unit</th>
                             <th>Floor</th>
                             <th>Total Visits</th>
-                            <th>Approved Visits</th>
-                            <th>Rejected Visits</th>
+                            <th>Reached Visits</th>
+                            <th>Cancelled Visits</th>
                             <th>% of Total Visits</th>
                         </tr>
                     </thead>
@@ -155,8 +151,8 @@
                                 <td>${unit.get("unitName")}</td>
                                 <td>${unit.get("floorNumber")}</td>
                                 <td>${unit.get("totalVisits")}</td>
-                                <td>${unit.get("approvedVisits")}</td>
-                                <td>${unit.get("rejectedVisits")}</td>
+                                <td>${unit.get("reachedVisits")}</td>
+                                <td>${unit.get("cancelledVisits")}</td>
                                 <td><fmt:formatNumber value="${unit.get('percentageOfTotal')}" pattern="0.0"/>%</td>
                             </tr>
                         </c:forEach>
@@ -199,7 +195,7 @@
             var visitStatusChart = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ["Approved", "Pending", "Rejected"],
+                    labels: ["Reached", "Submitted", "Cancelled"],
                     datasets: [{
                         data: statusData,
                         backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b'],

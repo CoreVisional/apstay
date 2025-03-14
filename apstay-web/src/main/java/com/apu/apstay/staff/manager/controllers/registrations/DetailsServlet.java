@@ -56,6 +56,7 @@ public class DetailsServlet extends HttpServlet {
                     _dto.phone(),
                     _dto.address(),
                     _dto.unitName(),
+                    _dto.floorNumber(),
                     _dto.status(),
                     _dto.remarks(),
                     _dto.createdAt()

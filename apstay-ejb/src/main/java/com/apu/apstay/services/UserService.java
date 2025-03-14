@@ -16,6 +16,10 @@ import jakarta.ejb.Stateless;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.apu.apstay.utils.EncryptionUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -189,6 +193,83 @@ public class UserService extends BaseService {
         user.setPasswordHash(PasswordUtil.hashPassword(newPassword));
         setAuditFields(user);
         userFacade.edit(user);
+    }
+    
+    public Map<String, Object> getUserActivityReportData() {
+        Map<String, Object> reportData = new HashMap<>();
+
+        int totalUsers = userFacade.count();
+        int activeUsers = userFacade.countActiveUsers();
+        int lockedUsers = userFacade.countLockedUsers();
+        int inactiveUsers = totalUsers - activeUsers - lockedUsers;
+        int loginsToday = userFacade.countLoginsToday();
+        int failedLoginsLastWeek = userFacade.countFailedLoginsLastWeek();
+
+        reportData.put("totalUsers", totalUsers);
+        reportData.put("activeUsers", activeUsers);
+        reportData.put("lockedUsers", lockedUsers);
+        reportData.put("inactiveUsers", inactiveUsers);
+        reportData.put("loginsToday", loginsToday);
+        reportData.put("failedLoginsLastWeek", failedLoginsLastWeek);
+
+        List<Integer> statusDistribution = Arrays.asList(
+            activeUsers, 
+            inactiveUsers,
+            lockedUsers
+        );
+        reportData.put("statusDistribution", statusDistribution);
+
+        List<Object[]> loginActivity = userFacade.getLoginActivityLastWeek();
+
+        String[] dayNames = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        int[] successfulLogins = new int[7];
+        int[] failedLogins = new int[7];
+
+        for (Object[] dayData : loginActivity) {
+            int dayIndex = ((Number) dayData[0]).intValue();
+            int successful = ((Number) dayData[1]).intValue();
+            int failed = ((Number) dayData[2]).intValue();
+            int adjustedIndex = (dayIndex + 5) % 7;
+            successfulLogins[adjustedIndex] = successful;
+            failedLogins[adjustedIndex] = failed;
+        }
+
+        reportData.put("dayLabels", Arrays.asList(dayNames));
+        reportData.put("successfulLogins", Arrays.stream(successfulLogins).boxed().collect(Collectors.toList()));
+        reportData.put("failedLogins", Arrays.stream(failedLogins).boxed().collect(Collectors.toList()));
+
+        List<Object[]> recentActivity = userFacade.getRecentUserActivity(20);
+        List<Map<String, Object>> userActivity = new ArrayList<>();
+
+        for (Object[] userData : recentActivity) {
+            Map<String, Object> user = new HashMap<>();
+
+            String username = (String) userData[0];
+            java.time.LocalDateTime lastLogin = (java.time.LocalDateTime) userData[1];
+            int failedAttempts = ((Number) userData[2]).intValue();
+            boolean active = (boolean) userData[3];
+            boolean locked = (boolean) userData[4];
+
+            user.put("username", username);
+            user.put("lastLogin", lastLogin);
+            user.put("failedAttempts", failedAttempts);
+
+            String status;
+            if (locked) {
+                status = "Locked";
+            } else if (active) {
+                status = "Active";
+            } else {
+                status = "Inactive";
+            }
+            user.put("status", status);
+
+            userActivity.add(user);
+        }
+
+        reportData.put("userActivity", userActivity);
+
+        return reportData;
     }
     // </editor-fold>
     

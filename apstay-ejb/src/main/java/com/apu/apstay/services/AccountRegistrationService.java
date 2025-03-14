@@ -16,8 +16,12 @@ import com.apu.apstay.utils.EncryptionUtil;
 import jakarta.ejb.EJB;
 import jakarta.ejb.Stateless;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -85,6 +89,7 @@ public class AccountRegistrationService extends BaseService {
                 _dto.phone(),
                 _dto.address(),
                 _dto.unitName(),
+                _dto.floorNumber(),
                 _dto.status(),
                 _dto.remarks(),
                 _dto.createdAt(),
@@ -185,8 +190,50 @@ public class AccountRegistrationService extends BaseService {
         return accountRegistrationFactory.toDto(_registration);
     }
     
+    public int getPendingRegistrationsCount() {
+        return accountRegistrationFacade.countPendingRegistrations();
+    }
+    
     private UserProfileDto getRegistrationByUserId(Long userId) {
         var _profile = userProfileFacade.findByUserId(userId);
         return _profile != null ? userProfileFactory.toDto(_profile) : null;
+    }
+    
+    public Map<String, Object> getApprovalEfficiencyReportData() {
+        Map<String, Object> reportData = new HashMap<>();
+
+        double averageApprovalTime = accountRegistrationFacade.getAverageApprovalTimeInDays();
+        double approvalRate = accountRegistrationFacade.getApprovalRate();
+        int pendingCount = accountRegistrationFacade.countPendingRegistrations();
+
+        reportData.put("averageApprovalTime", averageApprovalTime);
+        reportData.put("approvalRate", approvalRate);
+        reportData.put("pendingCount", pendingCount);
+
+        int[] statusCounts = accountRegistrationFacade.getRegistrationStatusCounts();
+        reportData.put("statusDistribution", Arrays.stream(statusCounts).boxed().collect(Collectors.toList()));
+
+        List<Object[]> recentRegistrations = accountRegistrationFacade.getRecentRegistrations(5);
+        List<Map<String, Object>> registrationsList = new ArrayList<>();
+
+        for (Object[] row : recentRegistrations) {
+            Map<String, Object> registration = new HashMap<>();
+
+            String applicantName = (String) row[0];
+            String unitName = (String) row[1];
+            Number daysToProcess = (Number) row[2];
+            ApprovalStatus status = (ApprovalStatus) row[3];
+
+            registration.put("applicantName", applicantName);
+            registration.put("unitName", unitName);
+            registration.put("daysToProcess", daysToProcess != null ? daysToProcess.intValue() : null);
+            registration.put("status", status.toString());
+
+            registrationsList.add(registration);
+        }
+
+        reportData.put("recentRegistrations", registrationsList);
+
+        return reportData;
     }
 }
