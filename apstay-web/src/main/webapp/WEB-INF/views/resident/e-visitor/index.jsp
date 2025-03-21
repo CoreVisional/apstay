@@ -4,7 +4,7 @@
 <%@ taglib prefix="shared" tagdir="/WEB-INF/tags/shared" %>
 <%@ taglib prefix="f" uri="/tlds/functions" %>
 
-<resident:layout>
+<resident:layout title="e-Visitor">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Visits</h1>
         <a href="${pageContext.request.contextPath}/resident/visits/create" class="d-sm-inline-block btn btn-primary shadow-sm">
