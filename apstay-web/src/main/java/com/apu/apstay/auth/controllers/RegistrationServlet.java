@@ -97,7 +97,7 @@ public class RegistrationServlet extends HttpServlet {
             }
 
             var _userCommand = mapToUserCreateCommand(registrationInput);
-            var _user = userService.createUser(_userCommand);
+            var _user = userService.createResident(_userCommand);
 
             var accountCommand = mapToRegistrationCreateCommand(registrationInput, _user.getId());
             accountRegistrationService.createAccountRegistration(accountCommand);

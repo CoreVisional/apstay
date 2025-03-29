@@ -35,7 +35,7 @@ public class RoleService {
             boolean hasSuperuser = _assignableRoles.stream()
                     .anyMatch(role -> role.name().equalsIgnoreCase("superuser"));
             if (!hasSuperuser) {
-                RoleDto superuserRole = roleFacade.findAll().stream()
+                var superuserRole = roleFacade.findAll().stream()
                         .filter(role -> role.getName().equalsIgnoreCase("superuser"))
                         .map(roleFactory::toDto)
                         .findFirst()

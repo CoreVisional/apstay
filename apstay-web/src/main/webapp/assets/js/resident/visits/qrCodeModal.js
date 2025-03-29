@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isActive === true || isActive === 'true') {
             try {
                 new QRCode(qrContainer, {
-                    text: code,
+                    text: String(code).trim(),
                     width: 200,
                     height: 200,
                     colorDark: "#000000",

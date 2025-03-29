@@ -75,9 +75,13 @@ public class UserService extends BaseService {
         return null;
     }
 
-    public User createUser(UserCreateCommand command) {
+    public User createResident(UserCreateCommand command) {
         var _user = createNewUser(command.username(), command.email(), command.password());
         userFacade.create(_user);
+        
+        var residentRole = roleFacade.findByName("resident");
+        _user.getRoles().add(residentRole);
+        
         return _user;
     }
 
@@ -306,9 +310,6 @@ public class UserService extends BaseService {
         _user.setEmail(email);
         _user.setPasswordHash(PasswordUtil.hashPassword(password));
         setAuditFields(_user);
-        
-        var residentRole = roleFacade.findByName("resident");
-        _user.getRoles().add(residentRole);
         
         return _user;
     }

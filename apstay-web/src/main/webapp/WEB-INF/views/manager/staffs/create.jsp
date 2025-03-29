@@ -32,14 +32,14 @@
                     
                     <!-- Role Dropdown -->
                     <div class="form-group">
-                        <label for="role" class="control-label">Role</label>
-                        <select id="role" name="role" class="form-control" required>
+                        <label for="roleId" class="control-label">Role</label>
+                        <select id="roleId" name="roleId" class="form-control" required>
                             <option value="">Select Role</option>
                             <c:forEach items="${roles}" var="role">
                                 <option value="${role.id}">${role.name}</option>
                             </c:forEach>
                         </select>
-                        <shared:validation-error field="role" />
+                        <shared:validation-error field="roleId" />
                     </div>
                 </div>
             </div>
