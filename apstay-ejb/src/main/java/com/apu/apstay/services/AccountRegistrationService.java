@@ -145,6 +145,7 @@ public class AccountRegistrationService extends BaseService {
         if (profileDto == null) {
             var _userProfile = userProfileFactory.getNew();
             _userProfile.setUser(_registration.getRegistrant());
+            _registration.getRegistrant().setUserProfile(_userProfile);
             _userProfile.setName(_registration.getName());
             _userProfile.setIdentityNumber(_registration.getIdentityNumber());
             _userProfile.setGender(Gender.valueOf(_registration.getGender()));
