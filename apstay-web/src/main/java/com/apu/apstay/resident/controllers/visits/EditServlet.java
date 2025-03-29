@@ -57,7 +57,7 @@ public class EditServlet extends HttpServlet {
         
         request.setAttribute("activeNav", "visits");
         
-        String pathInfo = request.getPathInfo();
+        var pathInfo = request.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing visit request id");
             return;
